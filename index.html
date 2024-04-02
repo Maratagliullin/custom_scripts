@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Преобразование значений в массив</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        #outputArray {
+            color: #ff0505;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+      
+        h1,h2,h3,h4 {
+            margin-top: 0;
+            font-family: monospace;
+        }
+        textarea {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:disabled,
+        button[disabled]{
+            color: #fff;
+            background-color: #81b8f4;
+            border-color: #007bff;
+        }
+       
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Введите значения с новой строки:</h2>
+        <textarea id="inputValues" rows="5"></textarea>
+        <button onclick="convertToArray()">Преобразовать</button><br><br>
+        <h3>Массив:</h3>
+        <pre id="outputArray"></pre>
+        <h3>Количество:</h3>
+        <pre id="lenArray"></pre>
+        <button id="copyButton" onclick="copyToClipboard()" disabled>Копировать в буфер обмена</button><br><br>
+    </div>
+
+    <script>
+        function convertToArray() {
+            // Получаем значение из текстового поля
+            const inputValues = document.getElementById('inputValues').value;
+            // Разбиваем значения на массив, разделенный по новым строкам
+            const valuesArray = inputValues.split('\n').filter(Boolean); // Удаляем пустые строки
+            // Отображаем полученный массив на странице
+            const outputArray = document.getElementById('outputArray');
+            // Выводим массив как строку с помощью JSON.stringify для удобства чтения
+            outputArray.textContent = JSON.stringify(valuesArray);
+            const lenArray = document.getElementById('lenArray');
+            lenArray.textContent = JSON.stringify(valuesArray.length);
+
+            // Активируем кнопку "Копировать в буфер обмена"
+            document.getElementById('copyButton').disabled = false;
+            return valuesArray; // Возвращаем массив для дальнейшего использования
+        }
+
+        function copyToClipboard() {
+            // Получаем содержимое элемента pre
+            const outputArray = document.getElementById('outputArray').textContent;
+            // Создаем временный элемент textarea для копирования текста
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = outputArray;
+            // Добавляем временный элемент в DOM
+            document.body.appendChild(tempTextArea);
+            // Выделяем текст в элементе textarea
+            tempTextArea.select();
+            // Копируем выделенный текст в буфер обмена
+            document.execCommand('copy');
+            // Удаляем временный элемент из DOM
+            document.body.removeChild(tempTextArea);
+        }
+    </script>
+</body>
+</html>
+           
