@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Преобразование значений в массив</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        #outputArray {
+            color: #ff0505;
+        }
+        .container {
+            max-width: 70%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+      
+        h1,h2,h3,h4 {
+            margin-top: 0;
+            font-family: monospace;
+        }
+        textarea {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:disabled,
+        button[disabled]{
+            color: #fff;
+            background-color: #81b8f4;
+            border-color: #007bff;
+        }
+       
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Формирование круга на основании документа Excel:</h2>
+        <h3>Введите значения с новой строки:</h3>
+        <textarea id="inputValues" rows="5"></textarea>
+        <button onclick="convertToArray()">Преобразовать</button><br><br>
+        <h3>Массив:</h3>
+        <pre id="outputArray"></pre>
+        <h3>Количество:</h3>
+        <pre id="lenArray"></pre>
+        <button id="copyButton" onclick="copyToClipboard()" disabled>Копировать в буфер обмена</button><br><br>
+    </div>
+
+     <div class="container">
+        <h2>Создание прайса:</h2>
+        <h3>Вставьте CSV из шаблона</h3>    
+        <textarea style="height: 400px;" id="csvInput" placeholder="CSV to JSON"></textarea>
+        <button onclick="processCSV()">Преобразовать в JSON</button><br><br>
+        <h3>Выходная структура:</h3>
+        <pre id="outputJSON"></pre>
+        <button id="copyButtonJSON" onclick="copyToClipboardJSON()" disabled>Копировать в буфер обмена</button><br><br>
+
+        <h3>Пример шаблона</h3>    
+<pre>
+Откуда;Куда ;Вид ТС;Тип ТС;Базовая цена;Перевозчик;Цена
+Н.Новгород;Пенза;"[""Зерновоз Авто"",""Изотерм""]";1 т (8-10 м³);73190,00;Перевозчик(3);38100,00;
+Н.Новгород;Пенза;"[""Паровоз""]";20 т (82 м³);73190,00;Перевозчик(1);105500,00;
+Н.Новгород;Пенза;"[""Паровоз""]";20 т (82 м³);73190,00;Перевозчик(102);101400,00;
+</pre><br>
+<h3>Выходной JSON формат</h3> 
+<pre>
+    [
+    {
+        "origins": "Н.Новгород",
+        "destinations": "Пенза",
+        "truck_mode": "1 т (8-10 м³)",
+        "truck_kinds": [
+            "Зерновоз Авто",
+            "Изотерм"
+        ],
+        "base_price": "73190,00",
+        "price": [
+            {
+                "carrier": "Перевозчик(1)",
+                "price": "38100,00"
+            }
+        ]
+    },
+    ...
+    ]
+</pre>
+    </div>
+
+
+    <script>
+        function convertToArray() {
+            // Получаем значение из текстового поля
+            const inputValues = document.getElementById('inputValues').value;
+            // Разбиваем значения на массив, разделенный по новым строкам
+            const valuesArray = inputValues.split('\n').filter(Boolean); // Удаляем пустые строки
+            // Отображаем полученный массив на странице
+            const outputArray = document.getElementById('outputArray');
+            // Выводим массив как строку с помощью JSON.stringify для удобства чтения
+            outputArray.textContent = JSON.stringify(valuesArray);
+            const lenArray = document.getElementById('lenArray');
+            lenArray.textContent = JSON.stringify(valuesArray.length);
+
+            // Активируем кнопку "Копировать в буфер обмена"
+            document.getElementById('copyButton').disabled = false;
+            return valuesArray; // Возвращаем массив для дальнейшего использования
+        }
+
+        function copyToClipboard() {
+            // Получаем содержимое элемента pre
+            const outputArray = document.getElementById('outputJSON').textContent;
+            // Создаем временный элемент textarea для копирования текста
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = outputArray;
+            // Добавляем временный элемент в DOM
+            document.body.appendChild(tempTextArea);
+            // Выделяем текст в элементе textarea
+            tempTextArea.select();
+            // Копируем выделенный текст в буфер обмена
+            document.execCommand('copy');
+            // Удаляем временный элемент из DOM
+            document.body.removeChild(tempTextArea);
+        }
+
+         function copyToClipboardJSON() {
+            // Получаем содержимое элемента pre
+            const outputArray = document.getElementById('outputJSON').textContent;
+            // Создаем временный элемент textarea для копирования текста
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = outputArray;
+            // Добавляем временный элемент в DOM
+            document.body.appendChild(tempTextArea);
+            // Выделяем текст в элементе textarea
+            tempTextArea.select();
+            // Копируем выделенный текст в буфер обмена
+            document.execCommand('copy');
+            // Удаляем временный элемент из DOM
+            document.body.removeChild(tempTextArea);
+        }
+
+
+         function processCSV() {
+            const csvText = document.getElementById('csvInput').value;
+            const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
+            const headers = lines[0].split(';').map(header => header.trim());
+            const rows = lines.slice(1);
+
+            const dataMap = new Map();
+
+            rows.forEach(row => {
+                
+                const values = row.split(';').map(value => value.trim());
+                let allNotEmpty = values.every(item => item.trim() == "");
+                if (!allNotEmpty){
+                const entry = Object.fromEntries(headers.map((header, index) => [header, values[index]]));
+                const uniqueKey = `${entry[headers[0]]};${entry[headers[1]]};${entry[headers[2]]};${entry[headers[3]]};${entry[headers[4]]}`;
+                let truckKinds;
+                let kinds = entry['Вид ТС'].replace(/^"|"$/g, '""');
+
+                try {
+                    truckKinds = JSON.parse(kinds.replace(/^\"\"|\"\"$/g, '').replace(/\"\"/g, '"'));
+                 } catch (error) {
+                    console.warn('Не верный формат Тип ТС: '+ kinds);
+                    truckKinds = []
+                } 
+
+                if (!dataMap.has(uniqueKey)) {
+                    dataMap.set(uniqueKey, {
+                        origins: entry[headers[0]],
+                        destinations: entry[headers[1]],
+                        truck_mode: entry[headers[3]],
+                        truck_kinds: truckKinds,
+                        base_price: entry[headers[4]],
+                        price: []
+                    });
+                }
+                dataMap.get(uniqueKey).price.push({
+                    carrier: entry[headers[5]],
+                    price: entry[headers[6]]
+                });
+            }});
+
+            const result = Array.from(dataMap.values());
+            document.getElementById('outputJSON').textContent = JSON.stringify(result, null, 4);
+            // Активируем кнопку "Копировать в буфер обмена"
+            document.getElementById('copyButtonJSON').disabled = false;
+        }
+
+    </script>
+</body>
+</html>
+           
